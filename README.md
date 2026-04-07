@@ -1,10 +1,10 @@
 # test-plan-generator
 
-A Claude Code skill that generates comprehensive, structured test plans from requirements and specifications — not from code.
+A Claude Code plugin that generates comprehensive, structured test plans from requirements and specifications — not from code.
 
 ## What it does
 
-The test-plan-generator skill enables QA engineers and developers to produce detailed test plans with 50-150+ test cases from a Jira ticket, Linear issue, or pasted requirements — in seconds instead of hours of manual work.
+The test-plan-generator plugin enables QA engineers and developers to produce detailed test plans with 50-150+ test cases from a Jira ticket, Linear issue, or pasted requirements — in seconds instead of hours of manual work.
 
 It systematically applies formal test design techniques:
 - **Equivalence Partitioning** and **Boundary Value Analysis** for input validation
@@ -17,24 +17,27 @@ Each test case includes priority, preconditions, steps, expected results, and tr
 
 ## Installation
 
-### Option 1: Claude Code CLI
+### Option 1: Test locally with `--plugin-dir`
 
 ```bash
-# Clone the repo
 git clone https://github.com/NazarKalytiuk/test-plan-generator.git
-
-# Place the skill folder in your Claude Code skills directory
-# macOS/Linux: ~/.claude/skills/
-# Or add it to your project's .claude/skills/ directory
-cp -r test-plan-generator ~/.claude/skills/
+claude --plugin-dir ./test-plan-generator
 ```
 
-### Option 2: Claude.ai
+### Option 2: Install from a marketplace
+
+If this plugin is added to a marketplace you have configured:
+
+```bash
+/plugin install test-plan-generator@marketplace-name
+```
+
+### Option 3: Claude.ai
 
 1. Download the skill folder (or ZIP from Releases)
 2. Open Claude.ai > Settings > Capabilities > Skills
 3. Click "Upload skill"
-4. Select the skill folder (zipped)
+4. Select the `skills/test-plan-generator` folder (zipped)
 5. Toggle on the skill
 
 ## Usage
@@ -45,6 +48,12 @@ The skill triggers automatically when you say things like:
 - "Write test cases for this feature"
 - "QA this ticket"
 - "Create test scenarios from these requirements"
+
+Or invoke it directly:
+
+```
+/test-plan-generator:test-plan-generator
+```
 
 ### With Jira/Linear integration
 
@@ -74,6 +83,22 @@ The skill produces a structured markdown test plan containing:
 - Individual test cases with full detail (priority, technique, steps, expected results)
 - Traceability matrix mapping requirements to test cases
 - Risks and assumptions
+
+## Plugin structure
+
+```
+test-plan-generator/
+├── .claude-plugin/
+│   └── plugin.json
+├── skills/
+│   └── test-plan-generator/
+│       ├── SKILL.md
+│       └── references/
+│           ├── test-techniques.md
+│           ├── test-case-template.md
+│           └── quality-characteristics.md
+└── README.md
+```
 
 ## When NOT to use
 

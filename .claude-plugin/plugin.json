@@ -1,0 +1,12 @@
+{
+  "name": "test-plan-generator",
+  "description": "Generate comprehensive test plans from requirements using formal test design techniques. Use when user says 'test plan', 'test cases', 'write tests for this feature', 'QA this ticket', or asks to create test scenarios from requirements.",
+  "version": "1.0.0",
+  "author": {
+    "name": "NazarKalytiuk",
+    "url": "https://github.com/NazarKalytiuk"
+  },
+  "repository": "https://github.com/NazarKalytiuk/test-plan-generator",
+  "license": "MIT",
+  "keywords": ["testing", "qa", "test-plan", "test-cases", "test-design", "istqb", "jira", "linear"]
+}
