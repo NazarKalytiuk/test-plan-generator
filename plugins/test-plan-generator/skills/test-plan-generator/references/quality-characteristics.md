@@ -26,11 +26,41 @@ Test focus: If requirements mention SLAs, response times, or "must handle X conc
 - **Data protection** — Is sensitive data encrypted, masked, or properly handled?
 - **Input validation** — Is the system resistant to injection attacks?
 
-Test focus: If the feature involves user data, authentication, or API endpoints, add test cases for:
-- Unauthenticated access attempts
-- Cross-role access attempts (user trying admin actions)
-- SQL injection / XSS in text inputs
-- Sensitive data exposure in API responses
+Test focus: If the feature involves user data, authentication, or API endpoints, generate test cases from this checklist:
+
+**Authentication & Session Management:**
+- Access protected endpoint without auth token → expect 401
+- Access with expired token → expect 401 + clear error message
+- Access with malformed/tampered token → expect 401
+- Session timeout after inactivity → expect forced re-authentication
+- Concurrent sessions handling (if policy exists)
+
+**Authorization & Access Control:**
+- User role A accessing role B's resources → expect 403
+- Horizontal privilege escalation (user A accessing user B's data of same role) → expect 403
+- Attempt to modify read-only resources → expect 403
+- Admin-only endpoints accessed by regular user → expect 403
+- Deleted/deactivated user attempting access → expect 401
+
+**Input Validation & Injection:**
+- SQL injection in text fields: `' OR 1=1 --`, `'; DROP TABLE users; --`
+- XSS in text fields: `<script>alert('xss')</script>`, `<img onerror=alert(1)>`
+- Path traversal: `../../etc/passwd`, `..%2F..%2Fetc%2Fpasswd`
+- Command injection: `; ls -la`, `| cat /etc/passwd`
+- NoSQL injection: `{"$gt": ""}`, `{"$ne": null}`
+- SSRF attempts in URL input fields
+
+**Data Protection:**
+- Sensitive fields (password, SSN, credit card) not returned in API responses
+- Sensitive data masked in logs
+- PII not exposed in error messages or stack traces
+- Passwords stored as hashes (not plaintext) — verify via password reset flow
+- HTTPS enforced (HTTP redirects to HTTPS)
+
+**Rate Limiting & Abuse Prevention:**
+- Rapid repeated requests → expect 429 after threshold
+- Brute force login attempts → expect account lockout or CAPTCHA
+- Bulk data export limits enforced
 
 ### Usability
 - **Learnability** — How easy is it for new users?

@@ -129,7 +129,9 @@ Produce a single markdown document with this structure:
 ## 3. Test Environment & Preconditions
 {Required setup, test data, accounts, configurations}
 
-## 4. Test Suites
+## 4. Test Suites — New Capability
+
+Test cases for the NEW functionality introduced by this feature, organized by functional area.
 
 ### 4.1 {Functional Area Name} ({count} test cases)
 **Applicable techniques:** {list}
@@ -140,12 +142,24 @@ Produce a single markdown document with this structure:
 ### 4.2 {Next Functional Area} ({count} test cases)
 ...
 
-## 5. Traceability Matrix
+## 5. Test Suites — Regression
+
+Test cases to verify that existing functionality is NOT broken by the new feature. Focus on:
+- Adjacent features that share data, APIs, or UI with the new feature
+- Existing workflows that the new feature modifies or extends
+- Integration points where the new feature connects to existing systems
+
+### 5.1 {Affected Existing Area} ({count} test cases)
+**Why at risk:** {brief explanation of how the new feature could affect this area}
+
+{Regression test cases}
+
+## 6. Traceability Matrix
 | Requirement/AC | Test Cases | Coverage |
 |---|---|---|
 | {req} | TC-XX-01, TC-XX-02 | Full / Partial |
 
-## 6. Risks and Assumptions
+## 7. Risks and Assumptions
 {Known risks, assumptions made during test planning}
 ```
 
@@ -160,6 +174,7 @@ Before delivering, verify:
 - [ ] Boundary values are tested (on, below, above)
 - [ ] Error handling and edge cases are covered
 - [ ] Traceability matrix is complete
+- [ ] Regression test cases cover existing features at risk of breaking
 - [ ] Test case count is proportional to feature complexity (small feature: 15-30, medium: 30-70, large: 70-150+)
 
 ## Output Format

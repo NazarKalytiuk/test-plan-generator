@@ -1,0 +1,27 @@
+{
+  "name": "nazar-qa-tools",
+  "owner": {
+    "name": "NazarKalytiuk",
+    "email": "nazarkalituk@gmail.com"
+  },
+  "metadata": {
+    "description": "QA and testing plugins for Claude Code",
+    "version": "1.0.0",
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "test-plan-generator",
+      "source": "./plugins/test-plan-generator",
+      "description": "Generate comprehensive test plans from requirements using formal test design techniques (EP, BVA, decision tables, state transition, use case testing). Use when user says 'test plan', 'test cases', 'write tests for this feature', 'QA this ticket', or asks to create test scenarios from requirements.",
+      "version": "1.0.0",
+      "author": {
+        "name": "NazarKalytiuk"
+      },
+      "homepage": "https://github.com/NazarKalytiuk/test-plan-generator",
+      "license": "MIT",
+      "keywords": ["testing", "qa", "test-plan", "test-cases", "test-design", "istqb", "jira", "linear"],
+      "category": "qa"
+    }
+  ]
+}

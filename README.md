@@ -1,17 +1,20 @@
 # test-plan-generator
 
-A [Claude Code plugin](https://code.claude.com/docs/en/plugins) that turns requirements into comprehensive, structured test plans — so you spend minutes instead of hours writing test cases.
+A [Claude Code plugin marketplace](https://code.claude.com/docs/en/plugin-marketplaces) with a plugin that turns requirements into comprehensive, structured test plans — so you spend minutes instead of hours writing test cases.
 
 Give it a Jira ticket, a Linear issue, or pasted requirements, and it produces a full test plan with 50-150+ test cases organized into hierarchical suites, each traced back to the original requirement.
 
 ## Quick start
 
 ```bash
-# 1. Clone
-git clone https://github.com/NazarKalytiuk/test-plan-generator.git
+# 1. Add the marketplace
+/plugin marketplace add NazarKalytiuk/test-plan-generator
 
-# 2. Run Claude Code with the plugin loaded
-claude --plugin-dir ./test-plan-generator
+# 2. Install the plugin
+/plugin install test-plan-generator@nazar-qa-tools
+
+# 3. Reload
+/reload-plugins
 ```
 
 Then just ask:
@@ -20,9 +23,61 @@ Then just ask:
 Create a test plan for PROJ-456
 ```
 
+## Installation
+
+### Option 1: From the marketplace (recommended)
+
+Add this repo as a marketplace and install the plugin:
+
+```bash
+/plugin marketplace add NazarKalytiuk/test-plan-generator
+/plugin install test-plan-generator@nazar-qa-tools
+/reload-plugins
+```
+
+To install for your whole team (shared via `.claude/settings.json`):
+
+```bash
+/plugin install test-plan-generator@nazar-qa-tools --scope project
+```
+
+### Option 2: Local testing with `--plugin-dir`
+
+```bash
+git clone https://github.com/NazarKalytiuk/test-plan-generator.git
+claude --plugin-dir ./test-plan-generator/plugins/test-plan-generator
+```
+
+### Option 3: Team auto-setup
+
+Add to your project's `.claude/settings.json` so the marketplace is available for all team members:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "nazar-qa-tools": {
+      "source": {
+        "source": "github",
+        "repo": "NazarKalytiuk/test-plan-generator"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "test-plan-generator@nazar-qa-tools": true
+  }
+}
+```
+
+### Option 4: Claude.ai (skill upload)
+
+1. Download and zip the `plugins/test-plan-generator/skills/test-plan-generator` folder
+2. Go to **Settings > Capabilities > Skills**
+3. Click **Upload skill** and select the zip
+4. Toggle the skill on
+
 ## How it works
 
-The plugin applies formal test design techniques from ISTQB and industry best practices — automatically selecting the right technique based on the requirement pattern:
+The plugin applies formal test design techniques from ISTQB and industry best practices, automatically selecting the right technique based on the requirement pattern:
 
 | Requirement pattern | Technique applied |
 |---|---|
@@ -34,30 +89,6 @@ The plugin applies formal test design techniques from ISTQB and industry best pr
 | Permission/role-based behavior | Decision Table (roles x actions x outcomes) |
 
 Multiple techniques are applied per area — a registration form gets EP + BVA for each field, decision tables for validation rules, use case testing for the flow, and state transition for account states.
-
-## Installation
-
-### Option 1: Local plugin (recommended for trying it out)
-
-```bash
-git clone https://github.com/NazarKalytiuk/test-plan-generator.git
-claude --plugin-dir ./test-plan-generator
-```
-
-### Option 2: Install from a marketplace
-
-If the plugin has been added to a marketplace you use:
-
-```bash
-/plugin install test-plan-generator@marketplace-name
-```
-
-### Option 3: Claude.ai (skill upload)
-
-1. Download and zip the `skills/test-plan-generator` folder
-2. Go to **Settings > Capabilities > Skills**
-3. Click **Upload skill** and select the zip
-4. Toggle the skill on
 
 ## Usage
 
@@ -78,7 +109,7 @@ The plugin activates automatically when you say things like:
 
 ### From a Jira or Linear ticket
 
-If you have the [Atlassian](https://code.claude.com/docs/en/discover-plugins) or [Linear](https://code.claude.com/docs/en/discover-plugins) MCP plugin connected, the skill reads the ticket and **all subtasks** automatically:
+If you have the Atlassian or Linear MCP plugin connected, the skill reads the ticket and **all subtasks** automatically:
 
 ```
 Create a test plan for PROJ-456
@@ -98,7 +129,7 @@ enter their email, receive a link valid for 1 hour, set a new password
 
 ## What you get
 
-A structured markdown test plan with:
+A structured markdown test plan:
 
 ```
 # Test Plan: {Feature Name}
@@ -126,7 +157,7 @@ TC-EMAIL-01: Valid email format accepted
 - Requirement:     AC-1: "User must provide a valid email address"
 ```
 
-### Example output structure
+### Example output scale
 
 For a "User Registration" feature, the plugin produced **47 test cases** across 5 suites:
 
@@ -140,31 +171,6 @@ For a "User Registration" feature, the plugin produced **47 test cases** across 
 
 With a complete traceability matrix mapping every acceptance criterion to its covering test cases.
 
-## What it does NOT do
-
-- Write code-level unit tests or test automation scripts
-- Generate test code for Jest, Pytest, Cypress, etc.
-- Test individual functions or methods
-- Replace exploratory testing
-
-This plugin works from **requirements**, not from source code.
-
-## Plugin structure
-
-```
-test-plan-generator/
-├── .claude-plugin/
-│   └── plugin.json                          # Plugin manifest
-├── skills/
-│   └── test-plan-generator/
-│       ├── SKILL.md                         # Main skill instructions
-│       └── references/
-│           ├── test-techniques.md           # EP, BVA, Decision Tables, State Transition, etc.
-│           ├── test-case-template.md        # Output format and complete example
-│           └── quality-characteristics.md   # Non-functional testing (perf, security, a11y)
-└── README.md
-```
-
 ## Works best with
 
 The plugin works standalone, but becomes more powerful when paired with MCP integrations:
@@ -175,6 +181,35 @@ The plugin works standalone, but becomes more powerful when paired with MCP inte
 | **Linear** | Read issues, sub-issues, linked documents automatically |
 
 Without MCP, just paste requirements directly into the conversation.
+
+## What it does NOT do
+
+- Write code-level unit tests or test automation scripts
+- Generate test code for Jest, Pytest, Cypress, etc.
+- Test individual functions or methods
+- Replace exploratory testing
+
+This plugin works from **requirements**, not from source code.
+
+## Repository structure
+
+```
+test-plan-generator/
+├── .claude-plugin/
+│   └── marketplace.json                     # Marketplace catalog
+├── plugins/
+│   └── test-plan-generator/                 # The plugin
+│       ├── .claude-plugin/
+│       │   └── plugin.json                  # Plugin manifest
+│       └── skills/
+│           └── test-plan-generator/
+│               ├── SKILL.md                 # Main skill instructions
+│               └── references/
+│                   ├── test-techniques.md
+│                   ├── test-case-template.md
+│                   └── quality-characteristics.md
+└── README.md
+```
 
 ## License
 

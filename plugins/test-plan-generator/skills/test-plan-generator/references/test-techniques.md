@@ -280,6 +280,16 @@ Anticipate likely defects based on common software mistakes:
 - Large data volumes
 - Network interruption during multi-step flows
 
+#### State Management Bug Patterns
+These patterns cause subtle, hard-to-reproduce defects — especially in UI-heavy or async-heavy features:
+
+- **Sequential Undo** — After a sequence of actions (e.g., create → edit → delete), undoing or reverting the last action leaves the system in an inconsistent state. Test: perform 3+ actions, then undo/cancel the last — verify the previous state is fully restored.
+- **Async Race Condition** — Two async operations (e.g., save + auto-save, two concurrent API calls) complete in unexpected order and overwrite each other's results. Test: trigger two overlapping writes to the same entity — verify the final state is deterministic and correct.
+- **Stale State / Stale Closure** — A UI or callback references an outdated version of state (common in React closures, setTimeout handlers, event listeners). Test: change a value, then immediately trigger an action that depends on it — verify the action uses the updated value, not the old one.
+- **Missing State Transition** — An event that should change the entity's state has no effect (e.g., clicking "Submit" on a form that's already been submitted). Test: trigger an event in a state where it shouldn't normally occur — verify proper handling (error, ignore, or queue).
+- **Conditional Dead Path** — A combination of conditions makes a code path unreachable (e.g., a button is disabled AND the API endpoint also rejects the request, but the disabled state is skipped under certain conditions). Test: bypass the UI guard (via API call or deep link) and verify the backend still enforces the constraint.
+- **Concurrent Editing Conflict** — Two users (or two browser tabs) edit the same entity simultaneously. Test: open the same entity in two sessions, make different changes in each, save both — verify conflict detection or last-write-wins behavior is correct and no data is silently lost.
+
 ### Exploratory Testing Charters
 For areas where requirements are vague, suggest exploratory testing charters:
 "Explore {target} with {resources} to discover {information}"
