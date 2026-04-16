@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nazarkalytiuk.github.io/spec-compliance-verifier/verdict.schema.json",
+  "title": "spec-compliance-verifier final verdict",
+  "type": "object",
+  "required": ["summary", "checks", "undetermined", "blocking_questions"],
+  "additionalProperties": false,
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["mode", "total_checks", "compliant", "violated", "undetermined"],
+      "additionalProperties": false,
+      "properties": {
+        "story_id": { "type": ["string", "null"] },
+        "mode": { "type": "string", "enum": ["static", "executable"] },
+        "total_checks": { "type": "integer", "minimum": 0 },
+        "compliant": { "type": "integer", "minimum": 0 },
+        "violated": { "type": "integer", "minimum": 0 },
+        "undetermined": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "stage", "technique_ids", "source_books", "status"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "stage": { "type": "string", "enum": ["S1", "S2", "S3", "S4", "S5", "S6"] },
+          "technique_ids": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z0-9_]+$" }
+          },
+          "source_books": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "enum": ["B1", "B2", "B3", "B4", "B5"] }
+          },
+          "status": { "type": "string", "enum": ["COMPLIANT", "VIOLATED", "UNDETERMINED"] },
+          "evidence": { "type": ["string", "null"] },
+          "counterexample": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "required": ["kind"],
+                "properties": {
+                  "kind": { "type": "string", "enum": ["input_tuple", "shrunk_fastcheck", "failing_test_row", "decision_table_cell", "diff_hunk"] },
+                  "value": {},
+                  "description": { "type": "string" }
+                }
+              }
+            ]
+          },
+          "design_note": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "undetermined": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["check_id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "check_id": { "type": "string" },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "ambiguous_ac",
+              "contradictory_ac",
+              "unspecified_outcome",
+              "code_not_available",
+              "missing_schema_for_field",
+              "executable_mode_failed",
+              "unmanaged_dependency_not_visible",
+              "timeout",
+              "multi_story_not_supported"
+            ]
+          },
+          "hint": { "type": "string" }
+        }
+      }
+    },
+    "blocking_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ac_id", "question"],
+        "additionalProperties": false,
+        "properties": {
+          "ac_id": { "type": "string" },
+          "kind": {
+            "type": "string",
+            "enum": ["operator_precedence_ambiguity", "missing_row", "contradictory_rows", "unspecified_outcome", "conflicting_acs"]
+          },
+          "question": { "type": "string" },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                { "type": "string" },
+                {
+                  "type": "object",
+                  "required": ["formula"],
+                  "properties": {
+                    "formula": { "type": "string" },
+                    "implies": { "type": "string" }
+                  },
+                  "additionalProperties": true
+                }
+              ]
+            }
+          },
+          "witness": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nazarkalytiuk.github.io/spec-compliance-verifier/behavior-model.schema.json",
+  "title": "S3 Behavior Model",
+  "type": "object",
+  "required": ["stage", "requires", "ensures_by_outcome", "invariants", "frame_conditions", "collaborators"],
+  "additionalProperties": false,
+  "properties": {
+    "stage": { "const": "S3" },
+    "partial": { "type": "boolean", "default": false },
+    "requires": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "predicate", "source_ac_id"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "predicate": { "type": "string" },
+          "source_ac_id": { "type": "string" }
+        }
+      }
+    },
+    "ensures_by_outcome": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "predicate"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "predicate": { "type": "string" },
+              "source_ac_id": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "invariant", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "entity": { "type": "string" },
+          "invariant": { "type": "string" },
+          "kind": {
+            "type": "string",
+            "enum": ["enum_exhaustive", "predicate", "uniqueness", "referential_integrity", "temporal_ordering"]
+          }
+        }
+      }
+    },
+    "frame_conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "field", "must_change"],
+        "additionalProperties": false,
+        "properties": {
+          "entity": { "type": "string" },
+          "field": { "type": "string" },
+          "must_change": { "type": "boolean" },
+          "relation": { "type": "string", "description": "Optional relation like 'updatedAt > old(updatedAt)'." }
+        }
+      }
+    },
+    "collaborators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "classification", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "classification": {
+            "type": "string",
+            "enum": ["intra_system", "managed_out_of_process", "unmanaged_out_of_process"]
+          },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "humble_controller_violation": { "type": "boolean", "default": false },
+    "time_injection_required": { "type": "boolean", "default": false }
+  }
+}

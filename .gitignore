@@ -1,0 +1,8 @@
+# macOS cruft
+.DS_Store
+
+# Per-plugin build artifacts (intermediate digests and synthesis output)
+.claude-build/
+
+# Installed dependencies — lockfiles are tracked, node_modules is not
+node_modules/

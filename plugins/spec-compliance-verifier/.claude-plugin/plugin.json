@@ -1,0 +1,12 @@
+{
+  "name": "spec-compliance-verifier",
+  "description": "Verify whether a NestJS/TypeScript code change correctly implements a Jira user story for a REST endpoint. Produces a deterministic JSON verdict (COMPLIANT / VIOLATED / UNDETERMINED) with counterexamples. Use when user says 'verify code against story', 'does this implement the ticket', 'spec compliance check', or pastes a story plus a diff.",
+  "version": "1.0.0",
+  "author": {
+    "name": "NazarKalytiuk",
+    "url": "https://github.com/NazarKalytiuk"
+  },
+  "repository": "https://github.com/NazarKalytiuk/test-plan-generator",
+  "license": "MIT",
+  "keywords": ["spec", "compliance", "verification", "nestjs", "typescript", "rest", "acceptance", "property-based", "fast-check", "jira"]
+}

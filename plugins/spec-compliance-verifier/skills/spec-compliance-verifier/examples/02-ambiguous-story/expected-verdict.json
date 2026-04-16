@@ -1,0 +1,110 @@
+{
+  "summary": {
+    "story_id": "PROJ-1099",
+    "mode": "static",
+    "total_checks": 5,
+    "compliant": 0,
+    "violated": 0,
+    "undetermined": 5
+  },
+  "checks": [
+    {
+      "id": "S1-parsed",
+      "stage": "S1",
+      "technique_ids": ["derive_scope_from_goals", "given_when_then_structure"],
+      "source_books": ["B1"],
+      "status": "UNDETERMINED",
+      "evidence": "S1 extracted endpoint POST /orders/:id/cancel and 2 permission ACs, but S2 blocked further analysis.",
+      "counterexample": null
+    },
+    {
+      "id": "S3-requires-authorization",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions"],
+      "source_books": ["B5"],
+      "status": "UNDETERMINED",
+      "evidence": null,
+      "counterexample": null
+    },
+    {
+      "id": "S3-ensures-cancellation-outcome",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "change_assertions_old_new"],
+      "source_books": ["B5"],
+      "status": "UNDETERMINED",
+      "evidence": null,
+      "counterexample": null
+    },
+    {
+      "id": "S4-T-already-cancelled-outcome",
+      "stage": "S4",
+      "technique_ids": ["state_aware_spec_testing", "boundary_value_analysis"],
+      "source_books": ["B2"],
+      "status": "UNDETERMINED",
+      "evidence": null,
+      "counterexample": null
+    },
+    {
+      "id": "S4-T-admin-on-paid-order",
+      "stage": "S4",
+      "technique_ids": ["category_partition_combination"],
+      "source_books": ["B2"],
+      "status": "UNDETERMINED",
+      "evidence": null,
+      "counterexample": null
+    }
+  ],
+  "undetermined": [
+    {
+      "check_id": "S1-parsed",
+      "reason": "ambiguous_ac",
+      "hint": "S2 flagged AC-2 and AC-3 with 3 blocking_questions; cannot proceed to verdict."
+    },
+    {
+      "check_id": "S3-requires-authorization",
+      "reason": "ambiguous_ac",
+      "hint": "The authorization predicate has two plausible formalizations depending on operator precedence between admin and customer-owner rules."
+    },
+    {
+      "check_id": "S3-ensures-cancellation-outcome",
+      "reason": "unspecified_outcome",
+      "hint": "No AC says what status/body the response must have on success, or what should happen when an order is already in a terminal state (CANCELLED, PAID)."
+    },
+    {
+      "check_id": "S4-T-already-cancelled-outcome",
+      "reason": "unspecified_outcome",
+      "hint": "Cannot enumerate boundary behavior for non-pending orders without a declared outcome."
+    },
+    {
+      "check_id": "S4-T-admin-on-paid-order",
+      "reason": "ambiguous_ac",
+      "hint": "Whether an admin can cancel a PAID order is not addressed."
+    }
+  ],
+  "blocking_questions": [
+    {
+      "ac_id": "AC-2/AC-3",
+      "kind": "operator_precedence_ambiguity",
+      "question": "Can an admin cancel ANY order (including PAID/CANCELLED), or only pending orders? AC-2 says 'admins can cancel orders' and AC-3 restricts customers to their own pending orders; it is unclear whether the PENDING condition also applies to admins.",
+      "candidates": [
+        { "formula": "isAdmin || (isOwner && status == 'PENDING')", "implies": "admin may cancel PAID/CANCELLED orders" },
+        { "formula": "(isAdmin || isOwner) && status == 'PENDING'", "implies": "admin cannot cancel non-pending orders" }
+      ],
+      "witness": { "role": "admin", "order_status": "PAID", "output_per_candidate": ["allow", "deny"] }
+    },
+    {
+      "ac_id": "AC-3",
+      "kind": "unspecified_outcome",
+      "question": "When an attempt to cancel is not allowed (non-owner, non-admin, or wrong state), what HTTP status and body must the API return? Candidates include 403 Forbidden, 409 Conflict (for already-cancelled), or 404 Not Found to avoid leaking existence.",
+      "candidates": ["403 Forbidden", "404 Not Found", "409 Conflict on already-terminal states, 403 otherwise"],
+      "witness": { "scenario": "customer cancels someone else's order" }
+    },
+    {
+      "ac_id": "AC-1",
+      "kind": "unspecified_outcome",
+      "question": "On successful cancellation, what is the response? (a) 200 with the updated order, (b) 204 No Content, or (c) 202 Accepted if asynchronous? The ticket does not say.",
+      "candidates": ["200 + updated order JSON", "204 No Content", "202 Accepted (if async capture reversal)"],
+      "witness": { "scenario": "admin cancels a PENDING order" }
+    }
+  ]
+}

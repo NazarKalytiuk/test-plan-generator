@@ -1,0 +1,122 @@
+{
+  "summary": {
+    "story_id": "PROJ-1001",
+    "mode": "static",
+    "total_checks": 12,
+    "compliant": 12,
+    "violated": 0,
+    "undetermined": 0
+  },
+  "checks": [
+    {
+      "id": "S3-requires-amount_positive",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "observable_behavior_filter"],
+      "source_books": ["B5", "B3"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:26 — @IsPositive() on CreateOrderDto.amount",
+      "counterexample": null
+    },
+    {
+      "id": "S3-requires-amount_integer",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions"],
+      "source_books": ["B5"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:25 — @IsInt() on amount",
+      "counterexample": null
+    },
+    {
+      "id": "S3-requires-currency_iso4217",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions"],
+      "source_books": ["B5"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:29 — @Matches(/^[A-Z]{3}$/) on currency",
+      "counterexample": null
+    },
+    {
+      "id": "S3-requires-authenticated",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "intra_vs_inter_system_rule"],
+      "source_books": ["B5", "B3"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:56 — @UseGuards(JwtAuthGuard) on controller",
+      "counterexample": null
+    },
+    {
+      "id": "S3-ensures-success-status_201",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions"],
+      "source_books": ["B5"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:61 — @HttpCode(201) on create()",
+      "counterexample": null
+    },
+    {
+      "id": "S3-ensures-success-body_id_uuid",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "observable_behavior_filter"],
+      "source_books": ["B5", "B3"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:44 — randomUUID() assigned to order.id; returned in response",
+      "counterexample": null
+    },
+    {
+      "id": "S3-ensures-success-body_status_pending",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "type_and_class_invariants"],
+      "source_books": ["B5"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:48 — status: 'PENDING' literal assigned before insert and returned",
+      "counterexample": null
+    },
+    {
+      "id": "S3-ensures-validation_error-status_400",
+      "stage": "S3",
+      "technique_ids": ["preconditions_postconditions", "black_box_authoring"],
+      "source_books": ["B5", "B3"],
+      "status": "COMPLIANT",
+      "evidence": "NestJS global ValidationPipe rejects decorated DTO violations with 400 by default",
+      "counterexample": null
+    },
+    {
+      "id": "S3-invariant-Order_status_enum_exhaustive",
+      "stage": "S3",
+      "technique_ids": ["type_and_class_invariants"],
+      "source_books": ["B5"],
+      "status": "COMPLIANT",
+      "evidence": "src/orders/orders.controller.ts:17 — status typed as 'PENDING'|'PAID'|'CANCELLED' (discriminated literal union)",
+      "counterexample": null
+    },
+    {
+      "id": "S4-T1-happy-path",
+      "stage": "S4",
+      "technique_ids": ["aniche_seven_step_spec_testing", "equivalence_partitioning"],
+      "source_books": ["B2"],
+      "status": "COMPLIANT",
+      "evidence": "static: input {amount:100, currency:'USD'} satisfies @IsPositive + @Matches, controller returns 201 with {id:uuid,status:'PENDING',amount:100,currency:'USD'}",
+      "counterexample": null
+    },
+    {
+      "id": "S4-T2-amount_zero_off_point",
+      "stage": "S4",
+      "technique_ids": ["boundary_value_analysis"],
+      "source_books": ["B2"],
+      "status": "COMPLIANT",
+      "evidence": "static: @IsPositive() rejects amount=0; ValidationPipe emits 400 with errors.amount",
+      "counterexample": null
+    },
+    {
+      "id": "S5-P1-invariant-created_order_has_pending_status",
+      "stage": "S5",
+      "technique_ids": ["invariant_properties"],
+      "source_books": ["B4"],
+      "status": "COMPLIANT",
+      "evidence": "static: status is hardcoded to 'PENDING' on line 48 before insert; every created order must satisfy the invariant",
+      "counterexample": null
+    }
+  ],
+  "undetermined": [],
+  "blocking_questions": []
+}

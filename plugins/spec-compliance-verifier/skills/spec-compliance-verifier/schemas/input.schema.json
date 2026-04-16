@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nazarkalytiuk.github.io/spec-compliance-verifier/input.schema.json",
+  "title": "spec-compliance-verifier input envelope",
+  "type": "object",
+  "required": ["story", "code"],
+  "additionalProperties": false,
+  "properties": {
+    "story": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": {
+        "text": { "type": "string", "minLength": 1 },
+        "language": { "type": "string", "enum": ["en", "uk", "auto"], "default": "auto" },
+        "id": { "type": ["string", "null"] }
+      }
+    },
+    "code": {
+      "type": "object",
+      "required": ["files"],
+      "additionalProperties": false,
+      "properties": {
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["path", "content"],
+            "additionalProperties": false,
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "content": { "type": "string" },
+              "diff": { "type": "string", "description": "Optional unified diff if this is a change; if present, compliance rules apply to the changed lines specifically." }
+            }
+          }
+        }
+      }
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["static", "executable", "auto"],
+      "default": "auto"
+    },
+    "openapi": {
+      "type": ["string", "null"],
+      "description": "YAML or JSON OpenAPI 3.x document as a string. Optional."
+    },
+    "entity_dependency_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": ["intra_system", "managed_out_of_process", "unmanaged_out_of_process"]
+      },
+      "description": "Map of collaborator names to their classification. Overrides defaults."
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "test_runner": { "type": "string", "enum": ["vitest", "jest"], "default": "vitest" },
+        "node_version": { "type": "string", "pattern": "^\\d+$", "default": "20" },
+        "timeout_ms": { "type": "integer", "minimum": 1000, "default": 60000 }
+      }
+    }
+  }
+}
